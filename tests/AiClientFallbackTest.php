@@ -151,4 +151,38 @@ final class AiClientFallbackTest extends TestCase
         self::assertSame('second', $response->meta()->provider());
         self::assertSame('s-model-explicit', $response->meta()->model());
     }
+
+    public function testFallbackUsesProviderDefaultModelsWhenModelIsNotSpecified(): void
+    {
+        $first = new FakeProvider(
+            'first',
+            'first-default',
+            static fn () => throw new RateLimitException('Temporary limit'),
+        );
+
+        $second = new FakeProvider(
+            'second',
+            'second-default',
+            static fn (ChatRequest $request) => ResponseFactory::text(
+                'ok from second default model',
+                'second',
+                $request->modelName() ?? 'second-default',
+            ),
+        );
+
+        $client = Ai::make()
+            ->register($first)
+            ->register($second)
+            ->router(Router::fallback([
+                'first',
+                'second',
+            ]));
+
+        $response = $client->chat(ChatRequest::make()->user('Hello'));
+
+        self::assertSame('ok from second default model', $response->text());
+        self::assertSame('second', $response->meta()->provider());
+        self::assertSame('second-default', $response->meta()->model());
+        self::assertSame('first-default', $response->meta()->attempts()[0]['model']);
+    }
 }

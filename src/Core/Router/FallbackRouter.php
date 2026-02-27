@@ -18,7 +18,7 @@ use Throwable;
 final class FallbackRouter implements RouterInterface
 {
     /**
-     * @var list<RouteTarget>
+     * @var list<string> provider or provider:model
      */
     private array $targets;
 
@@ -33,11 +33,11 @@ final class FallbackRouter implements RouterInterface
     ];
 
     /**
-     * @param list<string> $targets
+     * @param list<string> $targets provider or provider:model
      */
     public function __construct(array $targets)
     {
-        $this->targets = array_map(static fn (string $target): RouteTarget => RouteTarget::fromString($target), $targets);
+        $this->targets = $targets;
     }
 
     /**
@@ -69,7 +69,23 @@ final class FallbackRouter implements RouterInterface
         }
 
         if ($this->targets !== []) {
-            return $this->targets;
+            $resolvedTargets = [];
+            foreach ($this->targets as $target) {
+                $target = trim($target);
+                if ($target === '') {
+                    throw new ValidationException('Fallback target cannot be empty.');
+                }
+
+                if (str_contains($target, ':')) {
+                    $resolvedTargets[] = RouteTarget::fromString($target);
+                    continue;
+                }
+
+                $provider = $providers->get($target);
+                $resolvedTargets[] = new RouteTarget($provider->name(), $provider->defaultModel());
+            }
+
+            return $resolvedTargets;
         }
 
         if ($providers->count() === 1) {

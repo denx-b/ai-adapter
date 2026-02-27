@@ -10,7 +10,7 @@ use AiAdapter\Core\Router\PolicyRouter;
 final class Router
 {
     /**
-     * @param list<string> $targets provider:model
+     * @param list<string> $targets provider or provider:model
      */
     public static function fallback(array $targets): FallbackRouter
     {
