@@ -16,6 +16,7 @@
 
 # Example runtime output
 examples/output/
+examples/test.php
 
 # Misc
 *.log

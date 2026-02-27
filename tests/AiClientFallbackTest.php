@@ -8,8 +8,8 @@ use AiAdapter\Ai;
 use AiAdapter\Core\Router;
 use AiAdapter\DTO\ChatRequest;
 use AiAdapter\Exception\AuthException;
-use AiAdapter\Exception\ProviderChainException;
 use AiAdapter\Exception\RateLimitException;
+use AiAdapter\Exception\ValidationException;
 use AiAdapter\Tests\Support\FakeProvider;
 use AiAdapter\Tests\Support\ResponseFactory;
 use PHPUnit\Framework\TestCase;
@@ -53,12 +53,40 @@ final class AiClientFallbackTest extends TestCase
         self::assertSame('primary', $response->meta()->attempts()[0]['provider']);
     }
 
-    public function testDoesNotFallbackOnAuthException(): void
+    public function testFallbackOnAuthException(): void
     {
         $primary = new FakeProvider(
             'primary',
             'p-model',
             static fn () => throw new AuthException('Bad API key'),
+        );
+
+        $secondary = new FakeProvider(
+            'secondary',
+            's-model',
+            static fn () => ResponseFactory::text('ok from secondary', 'secondary', 's-model'),
+        );
+
+        $client = Ai::make()
+            ->register($primary)
+            ->register($secondary)
+            ->router(Router::fallback([
+                'primary:p-model',
+                'secondary:s-model',
+            ]));
+
+        $response = $client->chat(ChatRequest::make()->user('Hello'));
+
+        self::assertSame('ok from secondary', $response->text());
+        self::assertSame(1, $secondary->calls());
+    }
+
+    public function testDoesNotFallbackOnValidationException(): void
+    {
+        $primary = new FakeProvider(
+            'primary',
+            'p-model',
+            static fn () => throw new ValidationException('Bad request payload'),
         );
 
         $secondary = new FakeProvider(
@@ -78,7 +106,7 @@ final class AiClientFallbackTest extends TestCase
         try {
             $client->chat(ChatRequest::make()->user('Hello'));
             self::fail('Expected ProviderChainException was not thrown.');
-        } catch (ProviderChainException $exception) {
+        } catch (\AiAdapter\Exception\ProviderChainException $exception) {
             self::assertCount(1, $exception->attempts());
             self::assertSame('primary', $exception->attempts()[0]['provider']);
             self::assertSame(0, $secondary->calls());

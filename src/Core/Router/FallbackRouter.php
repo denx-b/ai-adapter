@@ -8,6 +8,7 @@ use AiAdapter\Contracts\RouterInterface;
 use AiAdapter\Core\ProviderRegistry;
 use AiAdapter\Core\RouteTarget;
 use AiAdapter\DTO\ChatRequest;
+use AiAdapter\Exception\AuthException;
 use AiAdapter\Exception\TimeoutException;
 use AiAdapter\Exception\RateLimitException;
 use AiAdapter\Exception\ProviderUnavailableException;
@@ -25,6 +26,7 @@ final class FallbackRouter implements RouterInterface
      * @var list<class-string<Throwable>>
      */
     private array $fallbackOn = [
+        AuthException::class,
         TimeoutException::class,
         RateLimitException::class,
         ProviderUnavailableException::class,

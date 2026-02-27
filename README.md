@@ -8,7 +8,7 @@ Provider-agnostic PHP library for chat-style LLM requests.
 - PSR transport under the hood (`Guzzle` + `Nyholm PSR-7`)
 - Chat API only
 - Providers: OpenAI, YandexGPT, DeepSeek
-- Router fallback policy (timeout/429/5xx)
+- Router fallback policy (auth/timeout/429/5xx)
 - Optional structured output with JSON schema
 
 ## Install
@@ -24,18 +24,19 @@ composer require denx-b/ai-adapter
 
 declare(strict_types=1);
 
+require __DIR__ . '/vendor/autoload.php';
+
 use AiAdapter\Ai;
 use AiAdapter\Core\Router;
 use AiAdapter\DTO\ChatRequest;
+use Dotenv\Dotenv;
+
+Dotenv::createUnsafeImmutable(__DIR__)->safeLoad();
 
 $openAiApiKey = getenv('OPENAI_API_KEY') ?: '';
 $yandexApiKey = getenv('YANDEX_API_KEY') ?: '';
 $yandexFolderId = getenv('YANDEX_FOLDER_ID') ?: '';
 $deepSeekApiKey = getenv('DEEPSEEK_API_KEY') ?: '';
-
-if ($openAiApiKey === '' || $yandexApiKey === '' || $yandexFolderId === '' || $deepSeekApiKey === '') {
-    throw new RuntimeException('Set OPENAI_API_KEY, YANDEX_API_KEY, YANDEX_FOLDER_ID, DEEPSEEK_API_KEY environment variables.');
-}
 
 $ai = Ai::make()
     ->withYandex($yandexApiKey, $yandexFolderId)
