@@ -1,0 +1,7 @@
+diff --git a/src/Service.php b/src/Service.php
+index 111..222 100644
+--- a/src/Service.php
++++ b/src/Service.php
+@@ -10,7 +10,7 @@
+- return $items[$i];
++ return $items[$i + 1];
