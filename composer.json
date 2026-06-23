@@ -1,8 +1,11 @@
 {
-  "name": "dbogdanoff/ai-adapter",
+  "name": "denx-b/ai-adapter",
   "description": "Provider-agnostic AI client for PHP with pluggable adapters and routing.",
   "type": "library",
   "license": "MIT",
+  "replace": {
+    "dbogdanoff/ai-adapter": "self.version"
+  },
   "require": {
     "php": "^8.2",
     "guzzlehttp/guzzle": "^7.9",
