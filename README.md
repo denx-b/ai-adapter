@@ -60,37 +60,37 @@ echo $response->text();
 ```
 
 `Router::fallback(['yandex', 'openai', 'deepseek'])` использует `defaultModel` каждого провайдера.
-Если нужна конкретная модель, можно указать `provider:model`, например `openai:gpt-4.1-mini`.
+Если нужна конкретная модель, можно указать `provider:model`, например `openai:gpt-5.4-mini`.
 
-## Рекомендованные модели (актуально на 27 февраля 2026)
+## Актуальные модели для chat/text (23 июня 2026)
 
-Ниже практичный shortlist для chat/text-generation сценариев в этой библиотеке.
+Библиотека не ограничивает список моделей жестко: в `model()` и `provider:model` можно передать любой ID, который поддерживает выбранный провайдер и ваш аккаунт. Ниже практичный shortlist для текущей chat/text реализации.
 
 | Провайдер | Model ID | Когда выбирать |
 | --- | --- | --- |
-| OpenAI | `gpt-5.2` | Лучшее общее качество для сложных задач, кода и agentic-сценариев. |
-| OpenAI | `gpt-5.2-pro` | Максимальное качество для сложных рассуждений, если допустима более высокая цена/латентность. |
-| OpenAI | `gpt-5-mini` | Оптимальный баланс цена/скорость/качество для продакшн-потоков. |
-| OpenAI | `gpt-5-nano` | Самый дешевый и быстрый вариант для простых задач: классификация, короткие суммаризации, high-throughput. |
-| OpenAI | `gpt-4.1` | Сильная non-reasoning модель, когда нужен стабильный детерминированный текст/tool-calling профиль без тяжелого reasoning. |
-| OpenAI | `gpt-4.1-mini` | Быстрый и недорогой рабочий вариант для типовых бизнес-задач. |
-| Yandex | `yandexgpt` | Лучшее качество среди базовых YandexGPT моделей в common instance. |
-| Yandex | `yandexgpt-lite` | Быстрее и дешевле, подходит для массовых простых запросов. |
-| DeepSeek | `deepseek-chat` | Универсальный режим для большинства задач (non-thinking). |
-| DeepSeek | `deepseek-reasoner` | Для сложных reasoning-задач, где важнее точность рассуждений, чем скорость. |
+| OpenAI | `gpt-5.5` | Флагман для сложного reasoning, кода и профессиональных задач. |
+| OpenAI | `gpt-5.4` | Более доступная сильная модель для кода и рабочих задач. |
+| OpenAI | `gpt-5.4-mini` | Дефолт библиотеки: хороший баланс качества, цены и задержки. |
+| OpenAI | `gpt-5.4-nano` | Минимальная цена и задержка для простых массовых задач. |
+| Yandex | `aliceai-llm` | Дефолт библиотеки: флагман Yandex для диалоговых ассистентов и сложных задач на русском. |
+| Yandex | `yandexgpt-5.1` | Актуальная версия YandexGPT Pro для RAG, анализа документов и извлечения данных. |
+| Yandex | `yandexgpt-5-pro` | Предыдущая версия YandexGPT Pro 5, если она уже проверена в продукте. |
+| Yandex | `yandexgpt-5-lite` | Быстрый и дешевый вариант для простых текстовых сценариев. |
+| DeepSeek | `deepseek-v4-flash` | Дефолт библиотеки: актуальный быстрый и дешевый режим DeepSeek. |
+| DeepSeek | `deepseek-v4-pro` | Более сильный режим DeepSeek для задач, где качество важнее цены и задержки. |
 
 Пример выбора "лучшего баланса" через дефолты:
 
 ```php
 $ai = Ai::make()
-    ->withYandex($yandexApiKey, $yandexFolderId, defaultModel: 'yandexgpt')
-    ->withOpenAi($openAiApiKey, defaultModel: 'gpt-5-mini')
-    ->withDeepSeek($deepSeekApiKey, defaultModel: 'deepseek-chat')
+    ->withYandex($yandexApiKey, $yandexFolderId, defaultModel: 'aliceai-llm')
+    ->withOpenAi($openAiApiKey, defaultModel: 'gpt-5.4-mini')
+    ->withDeepSeek($deepSeekApiKey, defaultModel: 'deepseek-v4-flash')
     ->router(Router::fallback(['yandex', 'openai', 'deepseek']));
 ```
 
 Примечания:
-- Для Yandex-адаптера текущая реализация добавляет ветку `/latest` автоматически.
+- Для Yandex можно передать короткий ID (`aliceai-llm`) или полный URI (`gpt://<folder_ID>/aliceai-llm`).
 - Если у провайдера нет доступа к выбранной модели, запрос завершится ошибкой и роутер перейдет к следующему провайдеру (по fallback-политике).
 
 See `examples/` for more scenarios.

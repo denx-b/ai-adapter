@@ -25,19 +25,19 @@ $providers = [
         'enabled' => (string) getenv('OPENAI_API_KEY') !== '',
         'run' => static fn () => Ai::make()
             ->withOpenAi((string) getenv('OPENAI_API_KEY'))
-            ->chat($request->target('openai', 'gpt-4.1-mini')),
+            ->chat($request->target('openai', 'gpt-5.4-mini')),
     ],
     'yandex' => [
         'enabled' => (string) getenv('YANDEX_API_KEY') !== '' && (string) getenv('YANDEX_FOLDER_ID') !== '',
         'run' => static fn () => Ai::make()
             ->withYandex((string) getenv('YANDEX_API_KEY'), (string) getenv('YANDEX_FOLDER_ID'))
-            ->chat($request->target('yandex', 'yandexgpt-lite')),
+            ->chat($request->target('yandex', 'aliceai-llm')),
     ],
     'deepseek' => [
         'enabled' => (string) getenv('DEEPSEEK_API_KEY') !== '',
         'run' => static fn () => Ai::make()
             ->withDeepSeek((string) getenv('DEEPSEEK_API_KEY'))
-            ->chat($request->target('deepseek', 'deepseek-chat')),
+            ->chat($request->target('deepseek', 'deepseek-v4-flash')),
     ],
 ];
 

@@ -10,7 +10,7 @@ final class DeepSeekProvider extends OpenAiCompatibleProvider
 {
     public function __construct(
         string $apiKey,
-        string $defaultModel = 'deepseek-chat',
+        string $defaultModel = 'deepseek-v4-flash',
         string $baseUri = 'https://api.deepseek.com/v1',
     ) {
         parent::__construct($apiKey, $baseUri, $defaultModel);

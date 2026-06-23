@@ -37,7 +37,7 @@ final class AiClient implements AiClientInterface
 
     public function withOpenAi(
         string $apiKey,
-        string $defaultModel = 'gpt-4.1-mini',
+        string $defaultModel = 'gpt-5.4-mini',
         string $baseUri = 'https://api.openai.com/v1',
     ): self {
         return $this->register(new OpenAiProvider($apiKey, $defaultModel, $baseUri));
@@ -46,7 +46,7 @@ final class AiClient implements AiClientInterface
     public function withYandex(
         string $apiKey,
         string $folderId,
-        string $defaultModel = 'yandexgpt-lite',
+        string $defaultModel = 'aliceai-llm',
         string $endpoint = 'https://llm.api.cloud.yandex.net/foundationModels/v1/completion',
     ): self {
         return $this->register(new YandexProvider($apiKey, $folderId, $defaultModel, $endpoint));
@@ -54,7 +54,7 @@ final class AiClient implements AiClientInterface
 
     public function withDeepSeek(
         string $apiKey,
-        string $defaultModel = 'deepseek-chat',
+        string $defaultModel = 'deepseek-v4-flash',
         string $baseUri = 'https://api.deepseek.com/v1',
     ): self {
         return $this->register(new DeepSeekProvider($apiKey, $defaultModel, $baseUri));

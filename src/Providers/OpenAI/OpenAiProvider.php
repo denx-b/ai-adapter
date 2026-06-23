@@ -10,7 +10,7 @@ final class OpenAiProvider extends OpenAiCompatibleProvider
 {
     public function __construct(
         string $apiKey,
-        string $defaultModel = 'gpt-4.1-mini',
+        string $defaultModel = 'gpt-5.4-mini',
         string $baseUri = 'https://api.openai.com/v1',
     ) {
         parent::__construct($apiKey, $baseUri, $defaultModel);

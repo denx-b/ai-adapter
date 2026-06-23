@@ -17,14 +17,14 @@ $ai = Ai::make()
             $context = $request->contextData();
 
             if (($context['region'] ?? null) === 'ru') {
-                return 'yandex:yandexgpt-lite';
+                return 'yandex:aliceai-llm';
             }
 
             if (($context['task'] ?? null) === 'code_review') {
-                return 'deepseek:deepseek-chat';
+                return 'deepseek:deepseek-v4-flash';
             }
 
-            return 'openai:gpt-4.1-mini';
+            return 'openai:gpt-5.4-mini';
         })
     );
 

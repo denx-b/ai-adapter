@@ -14,7 +14,7 @@ $ai = Ai::make()
 
 $request = ChatRequest::make()
     ->provider('deepseek')
-    ->model('deepseek-chat')
+    ->model('deepseek-v4-flash')
     ->system('Ты строгий ревьюер PHP 8.3. Ищи баги и регрессии.')
     ->user('Проанализируй изменения и верни JSON с проблемами.')
     ->files([

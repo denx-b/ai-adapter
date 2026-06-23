@@ -14,8 +14,8 @@ $ai = Ai::make()
     ->withOpenAi($_ENV['OPENAI_API_KEY'])
     ->router(
         Router::fallback([
-            'yandex:yandexgpt-lite',
-            'openai:gpt-4.1-mini',
+            'yandex:aliceai-llm',
+            'openai:gpt-5.4-mini',
         ])
     );
 

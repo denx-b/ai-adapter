@@ -33,7 +33,7 @@ final class YandexProvider implements ProviderInterface
     public function __construct(
         private readonly string $apiKey,
         private readonly string $folderId,
-        private readonly string $defaultModel = 'yandexgpt-lite',
+        private readonly string $defaultModel = 'aliceai-llm',
         private readonly string $endpoint = 'https://llm.api.cloud.yandex.net/foundationModels/v1/completion',
     ) {
         $this->http = DefaultTransport::client();
@@ -56,7 +56,7 @@ final class YandexProvider implements ProviderInterface
         $model = $request->modelName() ?? $this->defaultModel;
 
         $payload = [
-            'modelUri' => sprintf('gpt://%s/%s/latest', $this->folderId, $model),
+            'modelUri' => $this->modelUri($model),
             'completionOptions' => [
                 'stream' => false,
                 'temperature' => $request->temperatureValue() ?? 0.2,
@@ -139,5 +139,14 @@ final class YandexProvider implements ProviderInterface
         }
 
         throw new ValidationException($message);
+    }
+
+    private function modelUri(string $model): string
+    {
+        if (str_contains($model, '://')) {
+            return $model;
+        }
+
+        return sprintf('gpt://%s/%s', $this->folderId, ltrim($model, '/'));
     }
 }
