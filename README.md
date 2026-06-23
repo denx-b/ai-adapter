@@ -1,37 +1,29 @@
-# ai-adapter
+# AI-адаптер
 
-Provider-agnostic PHP library for chat-style LLM requests.
+PHP-библиотека для запросов к разным AI-провайдерам через единый интерфейс.
 
-## MVP scope
+## Возможности
 
-- PHP `^8.2`
-- PSR transport under the hood (`Guzzle` + `Nyholm PSR-7`)
-- Chat API only
-- Providers: OpenAI, YandexGPT, DeepSeek, Claude
-- Router fallback policy (auth/timeout/429/5xx)
-- Optional structured output with JSON schema
+- единый ООП-интерфейс
+- поддержка: OpenAI, YandexGPT, DeepSeek, Claude
+- fallback-роутинг при ошибках авторизации, таймаутах, rate limit и 5xx
+- возможность структурировать ответ через JSON Schema
+- PSR-транспорт под капотом (`Guzzle` + `Nyholm PSR-7`)
 
-## Install
+## Установка
 
 ```bash
 composer require denx-b/ai-adapter
 ```
 
-## Quick start
+## Быстрый старт
 
 ```php
 <?php
 
-declare(strict_types=1);
-
 require __DIR__ . '/vendor/autoload.php';
 
-use AiAdapter\Ai;
-use AiAdapter\Core\Router;
-use AiAdapter\DTO\ChatRequest;
-use Dotenv\Dotenv;
-
-Dotenv::createUnsafeImmutable(__DIR__)->safeLoad();
+\Dotenv\Dotenv::createUnsafeImmutable(__DIR__)->safeLoad();
 
 $openAiApiKey = getenv('OPENAI_API_KEY') ?: '';
 $yandexApiKey = getenv('YANDEX_API_KEY') ?: '';
@@ -39,13 +31,13 @@ $yandexFolderId = getenv('YANDEX_FOLDER_ID') ?: '';
 $deepSeekApiKey = getenv('DEEPSEEK_API_KEY') ?: '';
 $claudeApiKey = getenv('CLAUDE_API_KEY') ?: '';
 
-$ai = Ai::make()
+$ai = \AiAdapter\Ai::make()
     ->withYandex($yandexApiKey, $yandexFolderId)
     ->withOpenAi($openAiApiKey)
     ->withDeepSeek($deepSeekApiKey)
     ->withClaude($claudeApiKey)
     ->router(
-        Router::fallback([
+        \AiAdapter\Core\Router::fallback([
             'yandex',
             'openai',
             'deepseek',
@@ -54,15 +46,15 @@ $ai = Ai::make()
     );
 
 $response = $ai->chat(
-    ChatRequest::make()
-        ->system('You are a concise assistant.')
-        ->user('Summarize this incident report in 3 bullet points.')
+    \AiAdapter\DTO\ChatRequest::make()
+        ->system('Ты краткий и полезный ассистент.')
+        ->user('Объясни простыми словами, зачем нужен fallback между несколькими AI-провайдерами.')
 );
 
 echo $response->text();
 ```
 
-`Router::fallback(['yandex', 'openai', 'deepseek', 'claude'])` использует `defaultModel` каждого провайдера.
+`\AiAdapter\Core\Router::fallback(['yandex', 'openai', 'deepseek', 'claude'])` использует `defaultModel` каждого провайдера.
 Если нужна конкретная модель, можно указать `provider:model`, например `openai:gpt-5.4-mini`.
 
 ## Актуальные модели для chat/text (23 июня 2026)
@@ -89,12 +81,12 @@ echo $response->text();
 Пример выбора "лучшего баланса" через дефолты:
 
 ```php
-$ai = Ai::make()
+$ai = \AiAdapter\Ai::make()
     ->withYandex($yandexApiKey, $yandexFolderId, defaultModel: 'aliceai-llm')
     ->withOpenAi($openAiApiKey, defaultModel: 'gpt-5.4-mini')
     ->withDeepSeek($deepSeekApiKey, defaultModel: 'deepseek-v4-flash')
     ->withClaude($claudeApiKey, defaultModel: 'claude-sonnet-4-6')
-    ->router(Router::fallback(['yandex', 'openai', 'deepseek', 'claude']));
+    ->router(\AiAdapter\Core\Router::fallback(['yandex', 'openai', 'deepseek', 'claude']));
 ```
 
 Примечания:
