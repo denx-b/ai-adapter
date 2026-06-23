@@ -12,6 +12,7 @@ $ai = Ai::make()
     ->withOpenAi($_ENV['OPENAI_API_KEY'])
     ->withYandex($_ENV['YANDEX_API_KEY'], $_ENV['YANDEX_FOLDER_ID'])
     ->withDeepSeek($_ENV['DEEPSEEK_API_KEY'])
+    ->withClaude($_ENV['CLAUDE_API_KEY'])
     ->router(
         Router::policy(static function (ChatRequest $request): string {
             $context = $request->contextData();
@@ -21,7 +22,7 @@ $ai = Ai::make()
             }
 
             if (($context['task'] ?? null) === 'code_review') {
-                return 'deepseek:deepseek-v4-flash';
+                return 'claude:claude-sonnet-4-6';
             }
 
             return 'openai:gpt-5.4-mini';

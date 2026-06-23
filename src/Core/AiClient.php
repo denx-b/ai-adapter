@@ -11,6 +11,7 @@ use AiAdapter\Core\Router\FallbackRouter;
 use AiAdapter\DTO\ChatRequest;
 use AiAdapter\DTO\ChatResponse;
 use AiAdapter\Exception\ProviderChainException;
+use AiAdapter\Providers\Claude\ClaudeProvider;
 use AiAdapter\Providers\DeepSeek\DeepSeekProvider;
 use AiAdapter\Providers\OpenAI\OpenAiProvider;
 use AiAdapter\Providers\Yandex\YandexProvider;
@@ -58,6 +59,16 @@ final class AiClient implements AiClientInterface
         string $baseUri = 'https://api.deepseek.com/v1',
     ): self {
         return $this->register(new DeepSeekProvider($apiKey, $defaultModel, $baseUri));
+    }
+
+    public function withClaude(
+        string $apiKey,
+        string $defaultModel = 'claude-sonnet-4-6',
+        string $baseUri = 'https://api.anthropic.com/v1',
+        int $maxTokens = 4096,
+        string $anthropicVersion = '2023-06-01',
+    ): self {
+        return $this->register(new ClaudeProvider($apiKey, $defaultModel, $baseUri, $maxTokens, $anthropicVersion));
     }
 
     public function router(RouterInterface $router): self

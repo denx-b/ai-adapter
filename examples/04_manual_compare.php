@@ -39,6 +39,12 @@ $providers = [
             ->withDeepSeek((string) getenv('DEEPSEEK_API_KEY'))
             ->chat($request->target('deepseek', 'deepseek-v4-flash')),
     ],
+    'claude' => [
+        'enabled' => (string) getenv('CLAUDE_API_KEY') !== '',
+        'run' => static fn () => Ai::make()
+            ->withClaude((string) getenv('CLAUDE_API_KEY'))
+            ->chat($request->target('claude', 'claude-sonnet-4-6')),
+    ],
 ];
 
 $report = [

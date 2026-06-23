@@ -1,6 +1,6 @@
 # Ключи доступа и ручной запуск
 
-Этот чеклист нужен, чтобы выпустить ключи OpenAI, Yandex и DeepSeek, а затем прогнать один и тот же запрос через всех провайдеров.
+Этот чеклист нужен, чтобы выпустить ключи OpenAI, Yandex, DeepSeek и Claude, а затем прогнать один и тот же запрос через всех провайдеров.
 
 ## 1) OpenAI: выпуск API-ключа
 
@@ -69,7 +69,18 @@
 - https://api-docs.deepseek.com/
 - https://platform.deepseek.com/api_keys
 
-## 4) Локальная конфигурация
+## 4) Claude: выпуск API-ключа
+
+1. Войдите в Anthropic Console.
+2. Откройте страницу API keys.
+3. Создайте ключ.
+4. Сохраните его в `.env` как `CLAUDE_API_KEY`.
+
+Официальные ссылки:
+- https://console.anthropic.com/settings/keys
+- https://platform.claude.com/docs/en/api/overview
+
+## 5) Локальная конфигурация
 
 Скопируйте шаблон и заполните значения:
 
@@ -79,7 +90,7 @@ cp examples/.env.example .env
 
 В этом проекте `examples/04_manual_compare.php` сам загружает `.env` через `phpdotenv`, поэтому `source .env` не нужен.
 
-## 5) Ручной запуск одинакового запроса
+## 6) Ручной запуск одинакового запроса
 
 ```bash
 php examples/04_manual_compare.php "Объясни RAG простыми словами в 5 пунктах"
@@ -93,11 +104,11 @@ php examples/04_manual_compare.php "Объясни RAG..." "/tmp/compare.json"
 
 Скрипт печатает результат по каждому провайдеру и сохраняет JSON-отчет (статус, модель, latency, tokens, текст ответа).
 
-## 6) Типовые проблемы и быстрая диагностика
+## 7) Типовые проблемы и быстрая диагностика
 
 ### Биллинг и баланс (обязательно для всех провайдеров)
 
-Для OpenAI, Yandex и DeepSeek должен быть активный биллинг и положительный баланс (или доступный кредит/лимит).
+Для OpenAI, Yandex, DeepSeek и Claude должен быть активный биллинг и положительный баланс (или доступный кредит/лимит).
 
 Если баланс нулевой или превышены лимиты, запросы могут падать даже при корректных ключах:
 - `401/403` (в зависимости от политики провайдера);
@@ -116,6 +127,7 @@ php examples/04_manual_compare.php "Объясни RAG..." "/tmp/compare.json"
 - `YANDEX_API_KEY`
 - `YANDEX_FOLDER_ID`
 - `DEEPSEEK_API_KEY`
+- `CLAUDE_API_KEY`
 
 ### OpenAI: `RateLimitException` / `You exceeded your current quota`
 
@@ -127,3 +139,10 @@ php examples/04_manual_compare.php "Объясни RAG..." "/tmp/compare.json"
 - используется именно `API-ключ` (не статический и не авторизованный);
 - сервисному аккаунту выдана роль на нужный folder;
 - `YANDEX_FOLDER_ID` соответствует той папке, где выдали права.
+
+### Claude: ошибка авторизации или доступа
+
+Проверьте:
+- ключ создан в Anthropic Console;
+- в `.env` задан `CLAUDE_API_KEY`;
+- для аккаунта включен биллинг и доступ к выбранной модели.
