@@ -185,4 +185,26 @@ final class AiClientFallbackTest extends TestCase
         self::assertSame('second-default', $response->meta()->model());
         self::assertSame('first-default', $response->meta()->attempts()[0]['model']);
     }
+
+    public function testSingleRegisteredProviderUsesDefaultModelWithoutRouterOrTarget(): void
+    {
+        $provider = new FakeProvider(
+            'single',
+            'single-default',
+            static fn (ChatRequest $request) => ResponseFactory::text(
+                'ok from single default model',
+                'single',
+                $request->modelName() ?? 'single-default',
+            ),
+        );
+
+        $client = Ai::make()->register($provider);
+
+        $response = $client->chat(ChatRequest::make()->user('Hello'));
+
+        self::assertSame('ok from single default model', $response->text());
+        self::assertSame('single', $response->meta()->provider());
+        self::assertSame('single-default', $response->meta()->model());
+        self::assertSame('single-default', $provider->lastRequest()?->modelName());
+    }
 }

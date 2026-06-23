@@ -16,8 +16,38 @@ PHP-библиотека для запросов к разным AI-провай
 composer require denx-b/ai-adapter
 ```
 
-## Быстрый старт
+## Запрос к ChatGPT с моделью по-умолчанию
+```php
+<?php
 
+require __DIR__ . '/vendor/autoload.php';
+
+\Dotenv\Dotenv::createUnsafeImmutable(__DIR__)->safeLoad();
+
+$response = \AiAdapter\Ai::make()
+    ->withOpenAi((string) getenv('OPENAI_API_KEY'))
+    ->chat(
+        \AiAdapter\DTO\ChatRequest::make()
+            ->user('Объясни простыми словами, зачем нужен fallback между несколькими AI-провайдерами.')
+    );
+
+echo $response->text();
+```
+
+## Запрос к ChatGPT с указанием модели gpt-5.5
+```php
+$response = \AiAdapter\Ai::make()
+    ->withOpenAi((string) getenv('OPENAI_API_KEY'))
+    ->chat(
+        \AiAdapter\DTO\ChatRequest::make()
+            ->model('gpt-5.5')
+            ->user('Объясни простыми словами, зачем нужен fallback между несколькими AI-провайдерами.')
+    );
+
+echo $response->text();
+```
+## Пример роутинга
+Если у провайдера нет доступа к выбранной модели, запрос завершится ошибкой и роутер перейдет к следующему провайдеру (по fallback-политике).
 ```php
 <?php
 
@@ -54,9 +84,6 @@ $response = $ai->chat(
 echo $response->text();
 ```
 
-`\AiAdapter\Core\Router::fallback(['yandex', 'openai', 'deepseek', 'claude'])` использует `defaultModel` каждого провайдера.
-Если нужна конкретная модель, можно указать `provider:model`, например `openai:gpt-5.4-mini`.
-
 ## Актуальные модели для chat/text (23 июня 2026)
 
 Библиотека не ограничивает список моделей жестко: в `model()` и `provider:model` можно передать любой ID, который поддерживает выбранный провайдер и ваш аккаунт. Ниже практичный shortlist для текущей chat/text реализации.
@@ -91,7 +118,4 @@ $ai = \AiAdapter\Ai::make()
 
 Примечания:
 - Для Yandex можно передать короткий ID (`aliceai-llm`) или полный URI (`gpt://<folder_ID>/aliceai-llm`).
-- Для Claude прямой Anthropic API не является OpenAI-compatible, поэтому библиотека использует родной Messages API.
-- Если у провайдера нет доступа к выбранной модели, запрос завершится ошибкой и роутер перейдет к следующему провайдеру (по fallback-политике).
 
-See `examples/` for more scenarios.

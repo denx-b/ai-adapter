@@ -85,7 +85,7 @@
 Скопируйте шаблон и заполните значения:
 
 ```bash
-cp examples/.env.example .env
+cp .env.example .env
 ```
 
 В этом проекте `examples/04_manual_compare.php` сам загружает `.env` через `phpdotenv`, поэтому `source .env` не нужен.
